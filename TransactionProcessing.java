@@ -2,6 +2,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TransactionProcessing {
+
+    //use for billsPayment and checkDuplicateBills
+    static final String[] billers = {
+        "Manila Water",
+        "Meralco",
+        "Converge",
+        "Sky Cable",
+        "Maynilad",
+        "PLDT",
+        "Globe"
+    };
+
     private static ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
     private static void init() {
@@ -18,23 +30,42 @@ public class TransactionProcessing {
             transactions.add(moneyTransfer);
         }
 
-        HashMap<String, Integer> utilities = new HashMap<String, Integer>();
-        utilities.put("Manila Water", 500);
-        utilities.put("Manila Water", 700);
-        utilities.put("Meralco", 2000);
-        utilities.put("Meralco", 1200);
-        utilities.put("Converge", 1500);
-        utilities.put("Converge", 3000);
-        utilities.put("Sky Cable", 800);
-        utilities.put("Maynilad", 600);
-        utilities.put("PLDT", 1500);
-        utilities.put("Globe", 999);
+        double[][] billsAmount = {
+            {500, 700, 300},    // Manila Water
+            {2000, 1200},       // Meralco
+            {1500, 3000},       // Converge
+            {800},              // Sky Cable
+            {600},              // Maynilad
+            {1500},             // PLDT
+            {999}               // Globe
+        };
+
+        //create bills payment transaction
+        for (int i = 0; i < billsAmount.length; i++) {
+            for (int j = 0; j < billsAmount[i].length; j++) {
+                Bill bill = new Bill(billers[i], billsAmount[i][j]);
+                transactions.add(bill);
+            }
+        }
+
+        // HashMap<String, Integer> utilities = new HashMap<String, Integer>();
+        // utilities.put("Manila Water", 500);
+        // utilities.put("Manila Water", 700);
+        // utilities.put("Manila Water", 300);
+        // utilities.put("Meralco", 2000);
+        // utilities.put("Meralco", 1200);
+        // utilities.put("Converge", 1500);
+        // utilities.put("Converge", 3000);
+        // utilities.put("Sky Cable", 800);
+        // utilities.put("Maynilad", 600);
+        // utilities.put("PLDT", 1500);
+        // utilities.put("Globe", 999);
 
         // create 3 bills payment transaction
-        for (String company: utilities.keySet()) {
-            Bill bill = new Bill(company, utilities.get(company));
-            transactions.add(bill);
-        }
+        // for (String company: utilities.keySet()) {
+        //     Bill bill = new Bill(company, utilities.get(company));
+        //     transactions.add(bill);
+        // }
 
         HashMap<String, Integer> mobileNumbers = new HashMap<String, Integer>();
         mobileNumbers.put("09396369781", 300);
@@ -132,27 +163,42 @@ public class TransactionProcessing {
     }
 
     public static void checkDuplicateBills() {
+
         ArrayList<Transaction> bills = new ArrayList<Transaction>();
         
         for (Transaction transaction: transactions) {
             if (transaction instanceof Bill) {
-                // System.out.println(transaction);
                 bills.add(transaction);
             }
+        }
+
+        for (int i = 0; i < billers.length; i++) {
+            int duplicate = 0;
+
+            for (int j = 0; j < bills.size(); j++) {
+                Bill bill = (Bill) bills.get(j);
+                if (billers[i] == bill.company_name) {
+                    duplicate++;
+                } else {
+                    continue;
+                }
+            }
+
+            System.out.println(billers[i] + ": " + duplicate);
         }
     }
     
     public static void main(String[] args) {
         init();
 
-        // showAllTransactions();
+        showAllTransactions();
 
-        // try {
-        //     showSpecifiedTransactions("BILLS_PAYMENT");
-        // } catch (Exception err) {
-        //     throw err;
-        // }
+        try {
+            showSpecifiedTransactions("BILLS_PAYMENT");
+        } catch (Exception err) {
+            throw err;
+        }
 
-        // checkDuplicateBills();
+        checkDuplicateBills();
     }
 }
